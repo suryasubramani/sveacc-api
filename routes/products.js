@@ -23,4 +23,14 @@ router.route('/')
     });
   })
 
+router.route('/:id')
+  .get(function(req, res, next) {
+    Product.findById(req.params.id, function(err, product) {
+      if(err) {
+        res.emit(err);
+      }
+      res.json(product);
+    })
+  })
+
 module.exports = router;

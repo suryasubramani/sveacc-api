@@ -1,27 +1,36 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
+var Bill = require('../models/bill');
+var Product = require('../models/product');
 
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
-
-router.route('/login')
-  .get()
-  .post(function(req, res, next) {
-    var username = req.body.username;
-    var password = req.body.password;
-    User.findOne({username: username}, function(err, user) {
+router.route('/')
+  .get(function(req, res, next) {
+    Bill.find(function(err, bills) {
       if(err) {
         res.emit(err);
       }
-      if(user == null) {
-        res.json({"message": "user no found"})
-      }
-      res.json(user);
-    })
+      res.json(bills);
+    });
   })
+  .post(function(req, res, next) {
+    for (let i = 0; i < req.body.items.length; i++) {
+      const element = req.body.items[i];
+      let q = -1*element.quantity;
+      Product.findOneAndUpdate(element._id, { $inc: { quantity: q } }, function(err, post) {
+        if(err) {
+          res.emit(err);
+        }
+        Bill.create(req.body, function(err, post) {
+          if(err) {
+            res.emit(err);
+          }
+          res.json(post);
+        })
+      })
+    }
+  })
+
 
 module.exports = router;

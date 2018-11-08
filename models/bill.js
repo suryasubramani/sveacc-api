@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var billSchema = new mongoose.Schema({
 
+    date: Date,
     customerName: String,
     phoneNumber: String,
     items: [Object],
